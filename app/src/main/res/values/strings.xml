@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">JADAgenda</string>
+    <string name="title_home">Accueil</string>
+    <string name="title_dashboard">Tableau de bord</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="new_task">Ajouter une nouvelle tâche</string>
+    <string name="taskParent">Tâche parent</string>
+    <string name="taskLabel">Libellé de la tâche</string>
+    <string name="pick_a_date">Choisissez une date</string>
+    <string name="reminder">Rappel</string>
+    <string name="repetition">Répéter la tâche</string>
+    <string name="frequency">Fréquence</string>
+    <string name="save">Enregistrer</string>
+    <string name="title_accueil">Accueil</string>
+    <string name="title_quickview">Vue rapide</string>
+    <string name="enableNotificationMessage">L\'application n\'a pas la permission pour afficher des notifications.</string>
+    <string-array name="frequency_options">
+        <item>Chaque jour</item>
+        <item>Chaque semaine</item>
+        <item>Chaque mois</item>
+    </string-array>
+</resources>
