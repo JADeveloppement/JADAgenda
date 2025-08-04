@@ -96,7 +96,6 @@ public class DashboardFragment extends Fragment {
         calendar.getButtonTodayLayout().setOnClickListener(v -> {
             calendar.setDaySelected(Functions.getTodayDate());
             calendarClicked();
-            Log.d(TAG, "setCalendarView: ok clicked");
         });
 
         dashboardAgendaContainer.post(() -> agendaCalendarInitialHeight.set(dashboardAgendaContainer.getHeight()));

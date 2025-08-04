@@ -67,8 +67,6 @@ public class TasksFunctionsSQL {
             List<TasksTable> tasksWithoutChildren = new ArrayList<>();
             for (TasksTable t : tasksOfDay){
                 if (isNull(t.task_ID_parent) || (!isNull(t.task_ID_parent) && t.repeated == 1)) tasksWithoutChildren.add(t);
-                Log.d(TAG, "getTaskOfPeriod: id : " + t.task_ID + " date : "+ t.date +" label : " + t.label +
-                        "repeated : " + t.repeated + " task_id_parent : " + t.task_ID_parent);
             }
             return updateOrderNumberOfTask(tasksOfDay);
         } catch (Exception e) {
