@@ -4,6 +4,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.util.TypedValue;
@@ -26,6 +27,16 @@ import java.util.Locale;
 import fr.jadeveloppement.agenda.R;
 
 public class CustomCalendar extends LinearLayout {
+    private int CALENDAR_ACTIVE_COLOR = Color.parseColor("#FFA500");
+
+    public void setSelectionDayColor(int color){
+        this.CALENDAR_ACTIVE_COLOR = color;
+    }
+
+    public int getSelectionDayColor(){
+        return this.CALENDAR_ACTIVE_COLOR;
+    }
+
     private final String TAG = "Agenda";
 
     private final String[] monthesLong = {
@@ -157,7 +168,7 @@ public class CustomCalendar extends LinearLayout {
         nextMonth.setLayoutParams(tvParams1);
 
         prevMonth.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Medium);
-        tvMonth.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Medium);
+        tvMonth.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Small);
         nextMonth.setTextAppearance(androidx.appcompat.R.style.TextAppearance_AppCompat_Medium);
 
         prevMonth.setTypeface(Typeface.DEFAULT_BOLD);
@@ -268,14 +279,14 @@ public class CustomCalendar extends LinearLayout {
                 );
 
                 dayOfWeekIcon.setLayoutParams(iconParams);
-                dayOfWeekIcon.setBackgroundResource(R.drawable.alarm_bell_greyscale);
+//                dayOfWeekIcon.setBackgroundResource(R.drawable.alarm_bell_greyscale);
 
                 int finalDayOfMonth = dayOfMonth;
 
                 if ((week == 0 && dayOfWeek >= firstDayOfWeek) || (week > 0 && dayOfMonth <= daysOfMonth)){
                     dayOfWeekTv.setText(String.valueOf(dayOfMonth));
                     if (dayOfMonth == parseInt(calendarDay)){
-                        dayOfWeekLayout.setBackgroundResource(R.drawable.rounded_box_orange);
+                        dayOfWeekLayout.setBackgroundColor(CALENDAR_ACTIVE_COLOR);
                         dayOfWeekTv.setTypeface(Typeface.DEFAULT_BOLD);
                         dayOfWeekTv.setTextColor(context.getColor(R.color.white));
                     }
@@ -313,7 +324,8 @@ public class CustomCalendar extends LinearLayout {
                 LayoutParams.WRAP_CONTENT
         );
         btnSetToday.setLayoutParams(btnSetTodayParams);
-        btnSetToday.setBackgroundResource(R.drawable.rounded_box_orange);
+//        btnSetToday.setBackgroundResource(R.drawable.rounded_box_orange);
+        btnSetToday.setBackgroundColor(CALENDAR_ACTIVE_COLOR);
         btnSetToday.setTextColor(context.getColor(R.color.white));
         btnSetToday.setTypeface(Typeface.DEFAULT_BOLD);
         btnSetTodayParams.setMargins(
