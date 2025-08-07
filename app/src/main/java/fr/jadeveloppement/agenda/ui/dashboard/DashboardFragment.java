@@ -1,5 +1,7 @@
 package fr.jadeveloppement.agenda.ui.dashboard;
 
+import static java.util.Objects.isNull;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,12 +21,12 @@ import fr.jadeveloppement.agenda.MainActivity;
 import fr.jadeveloppement.agenda.components.DayComponent;
 import fr.jadeveloppement.agenda.components.animation.SlideAnimation;
 import fr.jadeveloppement.agenda.databinding.FragmentDashboardBinding;
+
 import fr.jadeveloppement.agenda.functions.Functions;
 import fr.jadeveloppement.agenda.functions.Variables;
+import fr.jadeveloppement.jadcustomcalendar.CustomCalendar;
 
-import fr.jadeveloppement.jadcalendar.CustomCalendar;
-
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements CustomCalendar.DateChanged {
 
     private String TAG = "agenda";
 
@@ -88,51 +90,50 @@ public class DashboardFragment extends Fragment {
         return root;
     }
 
+    private CustomCalendar customCalendar;
+
     private void setCalendarView(){
-        CustomCalendar calendar = new CustomCalendar(getContext(), (Runnable) this::calendarClicked);
-        dashboardAgendaContainer.addView(calendar.getCustomCalendarLayout());
-//        calendar = new CustomCalendar(getContext(), this::calendarClicked);
-//        dashboardAgendaContainer.addView(calendar.getMonthLayout());
-//        dashboardAgendaContainer.addView(calendar.getFirstLine());
-//        dashboardAgendaContainer.addView(calendar.getDaysLayout());
-//        dashboardAgendaContainer.addView(calendar.getButtonTodayLayout());
-//
-//        calendar.getButtonTodayLayout().setOnClickListener(v -> {
-//            calendar.setDaySelected(Functions.getTodayDate());
-//            calendarClicked();
-//        });
-//
-//        dashboardAgendaContainer.post(() -> agendaCalendarInitialHeight.set(dashboardAgendaContainer.getHeight()));
-//        dashboardPrevWeek.setOnClickListener(v -> {
-//            calendar.addInterval(-1, "week");
-//            calendarClicked();
-//        });
-//
-//        dashboardNextWeek.setOnClickListener(v -> {
-//            calendar.addInterval(1, "week");
-//            calendarClicked();
-//        });
-//        calendarClicked();
+
+        customCalendar = new CustomCalendar(getContext(), this);
+
+        dashboardAgendaContainer.addView(customCalendar.getCustomCalendarLayout());
+        dashboardAgendaContainer.post(() -> agendaCalendarInitialHeight.set(dashboardAgendaContainer.getHeight()));
+
+        dashboardPrevWeek.setOnClickListener(v -> {
+            customCalendar.addInterval(-1, "week");
+        });
+
+        dashboardNextWeek.setOnClickListener(v -> {
+            customCalendar.addInterval(1, "week");
+        });
+
+        updateTasksUI();
     }
-//
-    public void calendarClicked(){
-        Log.d(TAG, "calendarClicked: ");
-//        String[] weekRange = calendar.getWeekRange();
-//        String weekRangeLeft = Functions.convertStdDateToLocale(weekRange[0]);
-//        String weekRangeRight = Functions.convertStdDateToLocale(weekRange[1]);
-//        String weekRangeTvTxt = weekRangeLeft + " - " + weekRangeRight;
-//        dashboardWeekRange.setText(weekRangeTvTxt);
-//        dashboardCurrentWeek.setText("Semaine  " + calendar.getWeekNumber());
-//
-//        if (currentWeek != calendar.getWeekNumber()) {
-//            dashboardDaysLayoutContainer.removeAllViews();
-//            currentWeek = calendar.getWeekNumber();
-//
-//            for (String day : calendar.getListOfDatesOfWeek()){
-//                dashboardDaysLayoutContainer.addView(new DayComponent(getContext(), Variables.days[Functions.getDayOfWeekIndex(day)], Functions.convertStdDateToLocale(day)));
-//            }
-//        }
-//
+
+    private void updateTasksUI(){
+        String[] weekRange = customCalendar.getWeekRange();
+        String weekRangeLeft = Functions.convertStdDateToLocale(weekRange[0]);
+        String weekRangeRight = Functions.convertStdDateToLocale(weekRange[1]);
+        String weekRangeTvTxt = weekRangeLeft + " - " + weekRangeRight;
+        dashboardWeekRange.setText(weekRangeTvTxt);
+        dashboardCurrentWeek.setText("Semaine  " + customCalendar.getWeekNumber());
+
+        if (currentWeek != customCalendar.getWeekNumber()) {
+            dashboardDaysLayoutContainer.removeAllViews();
+            currentWeek = customCalendar.getWeekNumber();
+
+            for (String day : customCalendar.getListOfDatesOfWeek()){
+                dashboardDaysLayoutContainer.addView(new DayComponent(getContext(), Variables.days[Functions.getDayOfWeekIndex(day)], Functions.convertStdDateToLocale(day)));
+            }
+        }
+    }
+
+    @Override
+    public void selectedDayChanged(){
+        if (!isNull(customCalendar)){
+            updateTasksUI();
+            Log.d(TAG, "selectedDayChanged: weeknumber : " + customCalendar.getWeekNumber() + "\nweekdates : " + customCalendar.getWeekRange() + "\ngetdate : ");
+        }
     }
 
     @Override
