@@ -1,7 +1,12 @@
 package fr.jadeveloppement.agenda.ui.dashboard;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,20 +15,25 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.sql.Time;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.jadeveloppement.agenda.MainActivity;
-//import fr.jadeveloppement.agenda.components.CustomCalendar;
 import fr.jadeveloppement.agenda.components.DayComponent;
 import fr.jadeveloppement.agenda.components.animation.SlideAnimation;
 import fr.jadeveloppement.agenda.databinding.FragmentDashboardBinding;
 
 import fr.jadeveloppement.agenda.functions.Functions;
+import fr.jadeveloppement.agenda.functions.NotificationHelper;
 import fr.jadeveloppement.agenda.functions.Variables;
+import fr.jadeveloppement.agenda.functions.broadcast.ReminderBroadcastReceiver;
 import fr.jadeveloppement.jadcustomcalendar.CustomCalendar;
 
 public class DashboardFragment extends Fragment implements CustomCalendar.DateChanged {
@@ -31,8 +41,9 @@ public class DashboardFragment extends Fragment implements CustomCalendar.DateCh
     private String TAG = "agenda";
 
     private FragmentDashboardBinding binding;
-    private LinearLayout dashboardAgendaContainer,
-            dashboardPrevWeek,
+
+    private CustomCalendar dashboardAgendaContainer;
+    private LinearLayout dashboardPrevWeek,
             dashboardNextWeek,
             dashboardWeekLayoutContainer,
             dashboardDaysLayoutContainer;
@@ -43,8 +54,6 @@ public class DashboardFragment extends Fragment implements CustomCalendar.DateCh
             dashboardWeekRange;
 
     private ScrollView dashboardScrollView;
-
-//    private CustomCalendar calendar;
 
     private int currentWeek;
 
@@ -58,6 +67,7 @@ public class DashboardFragment extends Fragment implements CustomCalendar.DateCh
         View root = binding.getRoot();
 
         dashboardAgendaContainer = binding.dashboardAgendaContainer;
+
         dashboardWeekLayoutContainer = binding.dashboardWeekLayoutContainer;
         dashboardPrevWeek = binding.dashboardPrevWeek;
         dashboardNextWeek = binding.dashboardNextWeek;
@@ -68,8 +78,15 @@ public class DashboardFragment extends Fragment implements CustomCalendar.DateCh
 
         dashboardScrollView = binding.dashboardScrollView;
 
+        initDashboardUI();
+        setDashboardEvents();
         setCalendarView();
+        updateTasksUI();
 
+        return root;
+    }
+
+    private void initDashboardUI() {
         dashboardWeekLayoutContainer.setOnClickListener(v -> {
             if (agendaCalendarInitialHeight.get() > 10){
                 if (dashboardAgendaContainer.getHeight() > 100){
@@ -86,60 +103,51 @@ public class DashboardFragment extends Fragment implements CustomCalendar.DateCh
                 dashboardScrollView.getPaddingRight(),
                 MainActivity.getNavViewHeight() + 16
         ));
-
-        return root;
     }
 
-    private CustomCalendar customCalendar;
-
     private void setCalendarView(){
-
-        customCalendar = new CustomCalendar(getContext(), this);
-
-        dashboardAgendaContainer.addView(customCalendar.getCustomCalendarLayout());
         dashboardAgendaContainer.post(() -> agendaCalendarInitialHeight.set(dashboardAgendaContainer.getHeight()));
+        dashboardAgendaContainer.setListener(this);
+    }
 
+    private void setDashboardEvents() {
         dashboardPrevWeek.setOnClickListener(v -> {
-            customCalendar.addInterval(-1, "week");
+            dashboardAgendaContainer.addInterval(-1, "week");
         });
 
         dashboardNextWeek.setOnClickListener(v -> {
-            customCalendar.addInterval(1, "week");
+            dashboardAgendaContainer.addInterval(1, "week");
         });
-
-        updateTasksUI();
     }
 
     private void updateTasksUI(){
-        String[] weekRange = customCalendar.getWeekRange();
+        String[] weekRange = dashboardAgendaContainer.getWeekRange();
         String weekRangeLeft = Functions.convertStdDateToLocale(weekRange[0]);
         String weekRangeRight = Functions.convertStdDateToLocale(weekRange[1]);
         String weekRangeTvTxt = weekRangeLeft + " - " + weekRangeRight;
         dashboardWeekRange.setText(weekRangeTvTxt);
-        dashboardCurrentWeek.setText("Semaine  " + customCalendar.getWeekNumber());
+        dashboardCurrentWeek.setText("Semaine  " + dashboardAgendaContainer.getWeekNumber());
 
-        if (currentWeek != customCalendar.getWeekNumber()) {
+        if (currentWeek != dashboardAgendaContainer.getWeekNumber()) {
             dashboardDaysLayoutContainer.removeAllViews();
-            currentWeek = customCalendar.getWeekNumber();
+            currentWeek = dashboardAgendaContainer.getWeekNumber();
 
-            for (String day : customCalendar.getListOfDatesOfWeek()){
-                dashboardDaysLayoutContainer.addView(new DayComponent(getContext(), Variables.days[Functions.getDayOfWeekIndex(day)], Functions.convertStdDateToLocale(day)));
+            for (String day : dashboardAgendaContainer.getListOfDatesOfWeek()){
+                dashboardDaysLayoutContainer.addView(new DayComponent(requireContext(), Variables.days[Functions.getDayOfWeekIndex(day)], Functions.convertStdDateToLocale(day)));
             }
         }
     }
 
     @Override
     public void selectedDayChanged(){
-        if (!isNull(customCalendar)){
+        if (!isNull(dashboardAgendaContainer)){
             updateTasksUI();
-            Log.d(TAG, "selectedDayChanged: weeknumber : " + customCalendar.getWeekNumber() + "\nweekdates : " + customCalendar.getWeekRange() + "\ngetdate : ");
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(TAG, "onDestroyView: view destroyed");
         binding = null;
 
     }

@@ -14,6 +14,7 @@
     <string name="title_accueil">Accueil</string>
     <string name="title_quickview">Vue rapide</string>
     <string name="enableNotificationMessage">L\'application n\'a pas la permission pour afficher des notifications.</string>
+    <string name="new_reminder">Rappel</string>
     <string-array name="frequency_options">
         <item>Chaque jour</item>
         <item>Chaque semaine</item>

@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fr.jadeveloppement.agenda.R;
 import fr.jadeveloppement.agenda.functions.Functions;
@@ -33,6 +35,8 @@ public class PopupTask extends LinearLayout {
     private View viewParent;
     private View popupTaskLayout;
     private TasksTable task_parent;
+
+    private AtomicReference<String> selectedDay = new AtomicReference<>(""), selectedTime = new AtomicReference<>("");
 
     public PopupTask(Context c){
         super(c);
@@ -118,12 +122,22 @@ public class PopupTask extends LinearLayout {
 
         addNewTaskReminderContainer.setOnClickListener(v -> {
             Popup pickDate = new Popup(context, viewParent, null);
-            CustomCalendarPicker customCalPicker = new CustomCalendarPicker(context);
-            customCalPicker.setPickerTitle("Date de rappel");
-            pickDate.addContent(customCalPicker.getCalendarLayout());
-            customCalPicker.getBtnSave().setOnClickListener(v1 -> {
-                addNewTaskReminderDateTv.setText(customCalPicker.getDateTime());
-                reminderDate = customCalPicker.getDateTime();
+            PopupAddTaskReminder popupAddTaskReminder = new PopupAddTaskReminder(context);
+            pickDate.addContent(popupAddTaskReminder);
+
+            popupAddTaskReminder.getPopupAddTaskReminderSave().setOnClickListener(v1 -> {
+                if (popupAddTaskReminder.getDaySelected().isBlank() || popupAddTaskReminder.getTimeSelected().isBlank()){
+                    Toast.makeText(context, "Veuillez sélectionner une date et une heure valide.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                selectedDay.set(popupAddTaskReminder.getDaySelected());
+                selectedTime.set(popupAddTaskReminder.getTimeSelected());
+
+                String dateTimeReminder = Functions.convertStdDateToLocale(selectedDay.get()) + " " + selectedTime.get();
+
+                addNewTaskReminderDateTv.setText(dateTimeReminder);
+
                 pickDate.closePopup();
             });
         });
@@ -143,5 +157,9 @@ public class PopupTask extends LinearLayout {
 
     public Spinner getNewTaskRepeatSpinner(){
         return addNewTaskRepeatSpinner;
+    }
+
+    public String getReminderDate(){
+        return selectedDay.get() + " " + selectedTime.get();
     }
 }

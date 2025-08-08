@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black80"
-    android:gravity="top"
-    android:paddingHorizontal="8dp">
+    android:background="@color/black80">
 
     <LinearLayout
-        android:id="@+id/popupLayoutContentContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:orientation="vertical"
-        android:background="@drawable/bottom_rounded_box_white"/>
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:paddingHorizontal="8dp">
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/popupLayoutContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:orientation="vertical"
+            android:background="@drawable/bottom_rounded_box_white"/>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

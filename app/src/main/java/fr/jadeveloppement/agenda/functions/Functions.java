@@ -127,12 +127,12 @@ public class Functions {
     }
 
     /**
-     * Return the UNIX timestamp of a date dd/MM/yyyy HH:mm
-     * @param dateString
+     * Return the UNIX timestamp of a date yyyy/MM/dd HH:mm
+     * @param dateString : date to do the reminder
      * @return : UNIX timestamp
      */
     public static long getMillisecondsFromDateHourString(String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault());
         try {
             Date date = sdf.parse(dateString);
             if (date != null){
@@ -147,14 +147,15 @@ public class Functions {
     }
 
     public static void createReminder(Context context, String r, TasksTable task) {
+        Log.d("JADAgenda", "createReminder: reminder date : " + r);
         long reminderDate = getMillisecondsFromDateHourString(r);
         String notification_ID = task.notification_ID;
+
+        Log.d("JADAgenda", "createReminder: time Millis : " + reminderDate);
 
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
         intent.putExtra("message", task.label);
         intent.putExtra("notificationId", parseInt(notification_ID));
-
-        Log.d("JADagenda", "createReminder: rappel créé le " + reminderDate + " id : " + parseInt(notification_ID));
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, parseInt(notification_ID), intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
@@ -162,8 +163,8 @@ public class Functions {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderDate, pendingIntent);
         } catch(SecurityException ex){
-            Log.d("checklist", "Erreur alarm set : " + ex.getMessage());
-            Toast.makeText(context, "Une erreur est survenue lors du réglage du rappel.", Toast.LENGTH_LONG).show();
+            Log.d("JADAgenda", "Functions > createReminder > Erreur alarm set : " + ex.getMessage());
+            Toast.makeText(context, "Une erreur est survenue lors de la création du rappel.", Toast.LENGTH_LONG).show();
         }
 
     }

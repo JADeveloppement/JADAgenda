@@ -108,13 +108,13 @@ public class DayComponent extends LinearLayout implements TaskItemAdapter.OnDele
                     boolean formValid = true;
 
                     if (contentPopup.isReminderEnabled){
-                        if (contentPopup.reminderDate.isBlank()){
+                        if (contentPopup.getReminderDate().isBlank()){
                             makeToast("Rappel activé : veuillez sélectionner une date de rappel.");
                             formValid = false;
                         }
                         else {
                             newTask.notification_ID = String.valueOf((int) System.currentTimeMillis());
-                            Functions.createReminder(context, contentPopup.reminderDate, newTask);
+                            Functions.createReminder(context, contentPopup.getReminderDate(), newTask);
                         }
                     }
 
