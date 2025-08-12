@@ -1,4 +1,4 @@
-package fr.jadeveloppement.agenda.functions.sqlite.functions;
+package fr.jadeveloppement.agenda;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
@@ -9,34 +9,32 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import fr.jadeveloppement.agenda.functions.Functions;
 import fr.jadeveloppement.agenda.functions.WidgetFunctions;
-import fr.jadeveloppement.agenda.functions.sqlite.DatabaseInstance;
-import fr.jadeveloppement.agenda.functions.sqlite.dao.TasksDAO;
-import fr.jadeveloppement.agenda.functions.sqlite.tables.TasksTable;
 
-public class TasksFunctionsSQL {
+public class DummyTasksFunctions {
     private static final String TAG = "TaskFunctionsSQL";
-    private final DatabaseInstance dbFunctions;
-    private final TasksDAO tasksDAO;
+    private final DummyDatabaseInstance dbFunctions;
+    private final DummyTasksDAO tasksDAO;
     private final Context context;
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-    public TasksFunctionsSQL(Context context) {
+    public DummyTasksFunctions(Context context, @NotNull DummyDatabaseInstance db) {
         this.context = context;
-        this.dbFunctions = DatabaseInstance.getInstance(context);
+        this.dbFunctions = db;
         this.tasksDAO = dbFunctions.tasksDAO();
     }
 
-    public TasksTable cleanTask(TasksTable t){
+    public DummyTasksTable cleanTask(DummyTasksTable t){
         int[] acceptedFrequencies = {-1, 0, 1, 2, 3};
 
         t.label = t.label == null || t.label.isBlank() ? "" : t.label;
@@ -52,10 +50,10 @@ public class TasksFunctionsSQL {
         return t;
     }
 
-    private List<TasksTable> updateOrderNumberOfTask(List<TasksTable> tasks){
+    private List<DummyTasksTable> updateOrderNumberOfTask(List<DummyTasksTable> tasks){
         int orderNumber = 1;
         for (int i = 0; i < tasks.size(); i++){
-            TasksTable task = tasks.get(i);
+            DummyTasksTable task = tasks.get(i);
             if (isNull(task.task_ID_parent)){
                 task.orderNumber = orderNumber;
                 orderNumber++;
@@ -64,11 +62,11 @@ public class TasksFunctionsSQL {
         return tasks;
     }
 
-    public List<TasksTable> getTaskOfPeriod(String date) {
+    public List<DummyTasksTable> getTaskOfPeriod(String date) {
         try {
-            List<TasksTable> tasksOfDay = executorService.submit(() -> tasksDAO.getTasksOfDay(date)).get();
-            List<TasksTable> tasksWithoutChildren = new ArrayList<>();
-            for (TasksTable t : tasksOfDay){
+            List<DummyTasksTable> tasksOfDay = executorService.submit(() -> tasksDAO.getTasksOfDay(date)).get();
+            List<DummyTasksTable> tasksWithoutChildren = new ArrayList<>();
+            for (DummyTasksTable t : tasksOfDay){
                 if (isNull(t.task_ID_parent) || (!isNull(t.task_ID_parent) && t.repeated == 1)) tasksWithoutChildren.add(t);
             }
             return updateOrderNumberOfTask(tasksOfDay);
@@ -78,16 +76,16 @@ public class TasksFunctionsSQL {
         }
     }
 
-    public TasksTable getTask(long taskId) {
+    public DummyTasksTable getTask(long taskId) {
         try {
             return executorService.submit(() -> tasksDAO.getTaskById(taskId)).get();
         } catch (Exception e) {
             handleException("getTask", e);
-            return new TasksTable(); //
+            return new DummyTasksTable(); //
         }
     }
 
-    public List<TasksTable> getAllTasks() {
+    public List<DummyTasksTable> getAllTasks() {
         try {
             return executorService.submit(tasksDAO::getAllTasks).get();
         } catch (Exception e) {
@@ -96,16 +94,16 @@ public class TasksFunctionsSQL {
         }
     }
 
-    private int getNextOrderNumber(TasksTable t){
+    private int getNextOrderNumber(DummyTasksTable t){
         int nextOrderNumber = 1;
-        List<TasksTable> tasksOfDay = getTaskOfPeriod(t.date);
-        for (TasksTable task : tasksOfDay){
+        List<DummyTasksTable> tasksOfDay = getTaskOfPeriod(t.date);
+        for (DummyTasksTable task : tasksOfDay){
             if (isNull(task.task_ID_parent)) nextOrderNumber = task.orderNumber+1;
         }
         return nextOrderNumber;
     }
 
-    public TasksTable insertTask(TasksTable t){
+    public DummyTasksTable insertTask(DummyTasksTable t){
         try {
             t.orderNumber = getNextOrderNumber(t);
             long task_ID = executorService.submit(() -> tasksDAO.insertTask(cleanTask(t))).get();
@@ -132,7 +130,7 @@ public class TasksFunctionsSQL {
 
                 if (frequency > -1 && limit > -1){
                     for(int repetition = 1; repetition < limit ; repetition++){
-                        TasksTable taskRepeat = new TasksTable();
+                        DummyTasksTable taskRepeat = new DummyTasksTable();
                         taskRepeat.repeated = 1;
                         taskRepeat.label = t.label;
                         String date = t.date;
@@ -150,7 +148,7 @@ public class TasksFunctionsSQL {
         }
     }
 
-    public void updateTask(TasksTable t){
+    public void updateTask(DummyTasksTable t){
         try {
             WidgetFunctions.refreshWidget(context);
             executeDatabaseOperation(() -> tasksDAO.updateTask(cleanTask(t)));
@@ -177,15 +175,13 @@ public class TasksFunctionsSQL {
 
     public void deleteAllTasks() {
         try {
-            executeDatabaseOperation(() -> {
-                tasksDAO.deleteAllTasks();
-            });
+            executeDatabaseOperation(tasksDAO::deleteAllTasks);
         } catch (Exception e){
             handleException("deleteAllTasks", e);
         }
     }
 
-    public List<TasksTable> getTasksChildren(TasksTable task) {
+    public List<DummyTasksTable> getTasksChildren(DummyTasksTable task) {
         try {
             if (isNull(task)) return Collections.emptyList();
             else return executorService.submit(() -> tasksDAO.getChildrenTasks(task.task_ID)).get();
@@ -195,7 +191,7 @@ public class TasksFunctionsSQL {
         }
     }
 
-    public void deleteTask(TasksTable t) {
+    public void deleteTask(DummyTasksTable t) {
         try {
             WidgetFunctions.refreshWidget(context);
             executeDatabaseOperation(() -> {

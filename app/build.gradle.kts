@@ -42,10 +42,21 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+
     implementation(libs.room.runtime)
-    implementation(project(":jadcustomcalendar"))
     annotationProcessor(libs.room.compiler)
+
+    implementation(project(":jadcustomcalendar"))
+
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.runner)
+    androidTestImplementation(libs.rules)
+    androidTestImplementation(libs.mockito.android)
+
+    androidTestAnnotationProcessor(libs.room.compiler)
+    androidTestImplementation("androidx.room:room-testing:${libs.versions.roomRuntime.get()}")
 }

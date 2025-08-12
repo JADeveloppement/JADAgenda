@@ -1,45 +1,47 @@
-package fr.jadeveloppement.agenda.functions.sqlite.tables;
+package fr.jadeveloppement.agenda;
 
-import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-@Entity(tableName = "tasks",
-        foreignKeys = @ForeignKey(
-                entity = TasksTable.class,
-                parentColumns = "task_ID",
-                childColumns = "task_ID_parent",
-                onDelete = ForeignKey.SET_NULL,
-                onUpdate = ForeignKey.CASCADE
-        ))
-public class TasksTable {
+@Entity(tableName = "dummy_tasks_table")
+public class DummyTasksTable{
     @PrimaryKey(autoGenerate = true)
-    public long task_ID;
+    public Long task_ID;
 
+    @ColumnInfo(name = "label")
     public String label;
-    public String date;
+
+    @ColumnInfo(name = "date")
+    public String date; // YYYY-MM-DD
+
+    @ColumnInfo(name = "done")
     public Integer done;
+
+    @ColumnInfo(name = "orderNumber")
     public Integer orderNumber;
-    public String reminderDate;
 
-    public Long task_ID_parent;
+    @ColumnInfo(name = "reminderDate")
+    public String reminderDate; // YYYY-MM-DD HH:MM
 
-    public int repeated;
+    @ColumnInfo(name = "task_ID_parent")
+    public Long task_ID_parent; // Foreign key to parent task
 
+    @ColumnInfo(name = "repeated")
+    public Integer repeated; // 0 or 1
+
+    @ColumnInfo(name = "repeatFrequency")
     public String repeatFrequency;
 
+    @ColumnInfo(name = "notification_ID")
     public String notification_ID;
 
-    public TasksTable(){};
 
-    public TasksTable(String label, String date, Integer done, Integer orderNumber,
-                           String reminderDate, Long task_ID_parent, Integer repeated,
-                           String repeatFrequency, String notification_ID) {
+    public DummyTasksTable(String label, String date, Integer done, Integer orderNumber,
+                      String reminderDate, Long task_ID_parent, Integer repeated,
+                      String repeatFrequency, String notification_ID) {
         this.label = label;
         this.date = date;
         this.done = done;
@@ -51,7 +53,12 @@ public class TasksTable {
         this.notification_ID = notification_ID;
     }
 
-    public TasksTable(String label, String date) {
+    public DummyTasksTable() {
+        // Default constructor for Room
+    }
+
+    // Convenience constructor for tests
+    public DummyTasksTable(String label, String date) {
         this(label, date, 0, 0, "", null, 0, "-1", "");
     }
 
@@ -59,7 +66,7 @@ public class TasksTable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TasksTable that = (TasksTable) o;
+        DummyTasksTable that = (DummyTasksTable) o;
         // Compare by task_ID if available, or by unique properties like label and date for new tasks
         return Objects.equals(task_ID, that.task_ID) &&
                 Objects.equals(label, that.label) &&
@@ -78,7 +85,6 @@ public class TasksTable {
         return Objects.hash(task_ID, label, date, done, orderNumber, reminderDate, task_ID_parent, repeated, repeatFrequency, notification_ID);
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "TasksTable{" +

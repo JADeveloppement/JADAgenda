@@ -1,6 +1,10 @@
 package fr.jadeveloppement.agenda;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 
@@ -9,6 +13,8 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = {34})
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
