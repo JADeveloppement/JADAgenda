@@ -1,7 +1,6 @@
 package fr.jadeveloppement.agenda.ui.home;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +12,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import fr.jadeveloppement.agenda.MainActivity;
 import fr.jadeveloppement.agenda.components.Popup;
 import fr.jadeveloppement.agenda.components.PopupTask;
-import fr.jadeveloppement.agenda.components.TaskItemAdapter;
 import fr.jadeveloppement.agenda.databinding.FragmentHomeBinding;
 import fr.jadeveloppement.agenda.functions.Functions;
 import fr.jadeveloppement.agenda.functions.sqlite.tables.TasksTable;
-import fr.jadeveloppement.agenda.functions.touchHelper.SimpleItemTouchHelperCallback;
 
 public class HomeFragment extends Fragment {
 
@@ -65,22 +60,22 @@ public class HomeFragment extends Fragment {
         String homeTitleJ1 = "Tâche du\n" + Functions.convertStdDateToLongLocale(dateJ1);
         homeJ1TasksTv.setText(homeTitleJ1);
 
-        TaskItemAdapter adapter = new TaskItemAdapter(requireContext(), date, null, homeTaskDoneContainer, false);
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(homeTaskDoneContainer);
-        homeTaskDoneContainer.setAdapter(adapter);
-        homeTaskDoneContainer.setLayoutManager(new LinearLayoutManager(requireContext()));
+//        TaskItemAdapter adapter = new TaskItemAdapter(requireContext(), date, null, homeTaskDoneContainer, false);
+//        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+//        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+//        touchHelper.attachToRecyclerView(homeTaskDoneContainer);
+//        homeTaskDoneContainer.setAdapter(adapter);
+//        homeTaskDoneContainer.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        TaskItemAdapter adapterJ1 = new TaskItemAdapter(requireContext(), dateJ1, null, homeTaskDoneContainer, false);
-        ItemTouchHelper.Callback callbackJ1 = new SimpleItemTouchHelperCallback(adapterJ1);
-        ItemTouchHelper touchHelperJ1 = new ItemTouchHelper(callbackJ1);
-        touchHelperJ1.attachToRecyclerView(homeTaskDoneContainerJ1);
-        homeTaskDoneContainerJ1.setAdapter(adapterJ1);
-        homeTaskDoneContainerJ1.setLayoutManager(new LinearLayoutManager(requireContext()));
+//        TaskItemAdapter adapterJ1 = new TaskItemAdapter(requireContext(), dateJ1, null, homeTaskDoneContainer, false);
+//        ItemTouchHelper.Callback callbackJ1 = new SimpleItemTouchHelperCallback(adapterJ1);
+//        ItemTouchHelper touchHelperJ1 = new ItemTouchHelper(callbackJ1);
+//        touchHelperJ1.attachToRecyclerView(homeTaskDoneContainerJ1);
+//        homeTaskDoneContainerJ1.setAdapter(adapterJ1);
+//        homeTaskDoneContainerJ1.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         homeAddTask.setOnClickListener(v -> {
-            Popup addTask = new Popup(requireContext(), binding.getRoot(), adapter);
+            Popup addTask = new Popup(requireContext(), binding.getRoot());
             PopupTask addTaskContent = new PopupTask(requireContext(), binding.getRoot(), null);
             addTask.addContent(addTaskContent);
 
@@ -95,7 +90,6 @@ public class HomeFragment extends Fragment {
                     boolean formValid = true;
 
                     if (formValid){
-                        adapter.addItem(newTask);
                         addTaskContent.getTaskLabel().setText("");
                         Toast.makeText(requireContext(), "Tâche rajoutée avec succès", Toast.LENGTH_LONG).show();
                     } else {

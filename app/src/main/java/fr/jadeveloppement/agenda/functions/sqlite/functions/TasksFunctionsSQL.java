@@ -22,6 +22,7 @@ import fr.jadeveloppement.agenda.functions.WidgetFunctions;
 import fr.jadeveloppement.agenda.functions.sqlite.DatabaseInstance;
 import fr.jadeveloppement.agenda.functions.sqlite.dao.TasksDAO;
 import fr.jadeveloppement.agenda.functions.sqlite.tables.TasksTable;
+import kotlinx.coroutines.scheduling.Task;
 
 public class TasksFunctionsSQL {
     private static final String TAG = "TaskFunctionsSQL";
@@ -62,6 +63,20 @@ public class TasksFunctionsSQL {
             }
         }
         return tasks;
+    }
+
+    /**
+     *
+     * @param dates : dates of week to retrieve the tasks from
+     * @return : list of tasks from this week
+     */
+    public List<TasksTable> getTasksOfWeek(List<String> dates){
+        List<TasksTable> listOfTasks = new ArrayList<>();
+        for (String date : dates){
+            List<TasksTable> listOfTasksOfDay = getTaskOfPeriod(date);
+            listOfTasks.addAll(listOfTasksOfDay);
+        }
+        return listOfTasks;
     }
 
     public List<TasksTable> getTaskOfPeriod(String date) {

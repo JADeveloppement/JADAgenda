@@ -20,6 +20,7 @@
             android:background="@drawable/add_task"/>
 
         <TextView
+            android:id="@+id/addNewTaskPopupTitleTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/new_task"
@@ -49,12 +50,6 @@
                 android:visibility="gone"
                 android:layout_marginVertical="8dp">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/taskParent"
-                    android:textStyle="bold"/>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -66,13 +61,15 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/system"/>
+                        android:background="@drawable/task"/>
 
                     <TextView
                         android:id="@+id/addNewTaskParentLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/taskParent"/>
+                        android:text="@string/taskParent"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                        android:textStyle="bold" />
 
 
                 </LinearLayout>

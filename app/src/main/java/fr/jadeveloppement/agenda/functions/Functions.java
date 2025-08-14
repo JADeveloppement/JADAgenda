@@ -28,6 +28,8 @@ import fr.jadeveloppement.agenda.functions.sqlite.tables.TasksTable;
 
 public class Functions {
 
+    private final static String TAG = "JADAgenda";
+
     public static int getDaysInMonth(String dateString){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate locale = LocalDate.parse(dateString, formatter);
@@ -66,31 +68,47 @@ public class Functions {
     }
 
     public static String convertStdDateToLocale(String date){
-        String[] dateSplitted = date.split("-");
-        String day = dateSplitted[2];
-        String month = dateSplitted[1];
-        String year = dateSplitted[0];
-
-        return day + "/" + month + "/" + year;
+        if (date.contains("-")){
+            String[] dateSplitted = date.split("-");
+            String day = dateSplitted[2];
+            String month = dateSplitted[1];
+            String year = dateSplitted[0];
+            return day + "/" + month + "/" + year;
+        }
+        else {
+            Log.w(TAG, "Functions > convertLocaleDateToStd: Expected YYYY-MM-DD format, got : " + date);
+            return date;
+        }
     }
 
     public static String convertStdDateToLongLocale(String date){
-        int indexDay = getDayOfWeekIndex(date);
-        String[] dateSplitted = date.split("-");
-        int day = parseInt(dateSplitted[2]);
-        int month = parseInt(dateSplitted[1]);
-        int year = parseInt(dateSplitted[0]);
+        if (date.contains("-")){
+            int indexDay = getDayOfWeekIndex(date);
+            String[] dateSplitted = date.split("-");
+            int day = parseInt(dateSplitted[2]);
+            int month = parseInt(dateSplitted[1]);
+            int year = parseInt(dateSplitted[0]);
 
-        return Variables.days[indexDay] + " " + day + " " + Variables.monthes[month] + " " + year;
+            return Variables.days[indexDay] + " " + day + " " + Variables.monthes[month] + " " + year;
+        } else {
+            Toast.makeText(MainActivity.getContext(), "Une erreur est survenue", Toast.LENGTH_LONG).show();
+            Log.d(TAG, "Functions > convertStdDateToLongLocale > expected date format YYYY-MM-DD but got : " + date);
+            return date;
+        }
     }
 
     public static String convertLocaleDateToStd(String date){
-        String[] dateSplitted = date.split("/");
-        String day = dateSplitted[0];
-        String month = dateSplitted[1];
-        String year = dateSplitted[2];
+        if (!date.contains("/")){
+            String[] dateSplitted = date.split("/");
+            String day = dateSplitted[0];
+            String month = dateSplitted[1];
+            String year = dateSplitted[2];
 
-        return year + "-" + month + "-" + day;
+            return year + "-" + month + "-" + day;
+        } else {
+            Log.w(TAG, "Functions > convertLocaleDateToStd: Expected DD/MM/YYYY format, got : " + date);
+            return date;
+        }
     }
 
     /**

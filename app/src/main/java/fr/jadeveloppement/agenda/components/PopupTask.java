@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
@@ -32,7 +33,6 @@ public class PopupTask extends LinearLayout {
 
     private final Context context;
     private TasksTable task;
-    private View viewParent;
     private View popupTaskLayout;
     private TasksTable task_parent;
 
@@ -41,12 +41,13 @@ public class PopupTask extends LinearLayout {
     public PopupTask(Context c){
         super(c);
         this.context = c;
+
+        initPopup();
     }
 
     public PopupTask(Context c, View p, TasksTable t, TasksTable... task_p){
         super(c);
         this.context = c;
-        this.viewParent = p;
         this.popupTaskLayout = LayoutInflater.from(getContext()).inflate(R.layout.popup_task_layout, this, true);
         this.task = t;
         this.task_parent = !isNull(task_p) && task_p.length > 0 ? task_p[0] : null;
@@ -55,7 +56,7 @@ public class PopupTask extends LinearLayout {
     }
 
     private EditText addNewTaskLabel;
-    private TextView addNewTaskDateTv, addNewTaskSave,addNewTaskReminderDateTv, addNewTaskParentLabel, addNewTaskNotificationPermissionTv;
+    private TextView addNewTaskDateTv, addNewTaskSave,addNewTaskReminderDateTv, addNewTaskParentLabel, addNewTaskNotificationPermissionTv, addNewTaskPopupTitleTv;
     private ImageButton addNewTaskReminderEnabled, addNewTaskRepeatEnabled;
     private Spinner addNewTaskRepeatSpinner;
 
@@ -77,6 +78,7 @@ public class PopupTask extends LinearLayout {
         addNewTaskParentContainer = this.findViewById(R.id.addNewTaskParentContainer);
         addNewTaskParentLabel = this.findViewById(R.id.addNewTaskParentLabel);
         addNewTaskNotificationPermissionTv = this.findViewById(R.id.addNewTaskNotificationPermissionTv);
+        addNewTaskPopupTitleTv = this.findViewById(R.id.addNewTaskPopupTitleTv);
 
         addNewTaskLabel.addTextChangedListener(new TextWatcherFunction(addNewTaskLabel));
 
@@ -121,7 +123,7 @@ public class PopupTask extends LinearLayout {
         });
 
         addNewTaskReminderContainer.setOnClickListener(v -> {
-            Popup pickDate = new Popup(context, viewParent, null);
+            Popup pickDate = new Popup(context, this);
             PopupAddTaskReminder popupAddTaskReminder = new PopupAddTaskReminder(context);
             pickDate.addContent(popupAddTaskReminder);
 
@@ -161,5 +163,25 @@ public class PopupTask extends LinearLayout {
 
     public String getReminderDate(){
         return selectedDay.get() + " " + selectedTime.get();
+    }
+
+    public void enableReminder(boolean enable){
+        addNewTaskReminderEnabled.setVisibility(enable ? View.VISIBLE : View.GONE);
+    }
+
+    public void enableRepeat(boolean enable){
+        addNewTaskRepeatEnabled.setVisibility(enable ? View.VISIBLE : View.GONE);
+    }
+
+    public void setPopupTitle(@NonNull String title){
+        addNewTaskPopupTitleTv.setText(title);
+    }
+
+    public ImageButton getAddNewTaskReminderEnabled(){
+        return addNewTaskReminderEnabled;
+    }
+
+    public ImageButton getAddNewTaskRepeatEnabled(){
+        return addNewTaskRepeatEnabled;
     }
 }

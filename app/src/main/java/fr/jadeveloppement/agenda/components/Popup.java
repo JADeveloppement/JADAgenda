@@ -15,7 +15,6 @@ public class Popup {
 
     private final Context context;
     private View popupView;
-    private TaskItemAdapter adapter;
     private View container;
 
     public Popup(Context c){
@@ -25,11 +24,10 @@ public class Popup {
         initPopup();
     }
 
-    public Popup(Context c, View cont, TaskItemAdapter a){
+    public Popup(Context c, View cont){
         this.context = c;
         this.popupView = LayoutInflater.from(context).inflate(R.layout.popup_layout, null);
         this.container = cont;
-        this.adapter = a;
         initPopup();
     }
 
